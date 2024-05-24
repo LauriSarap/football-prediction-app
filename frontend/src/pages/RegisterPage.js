@@ -1,39 +1,42 @@
 import React, { useState } from 'react';
 
-function LoginPage() {
+function RegisterPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('/api/users/login', {
+      const response = await fetch('/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
       });
       const data = await response.json();
       if (response.ok) {
-        // Store the token in local storage or state management
-        localStorage.setItem('token', data.token);
-        // Redirect to dashboard or home page
-        window.location.href = '/dashboard';
+        setMessage('Registration successful. You can now log in.');
+        setError('');
       } else {
         setError(data.error);
+        setMessage('');
       }
     } catch (err) {
       console.error('Error:', err);
       setError('An error occurred. Please try again.');
+      setMessage('');
     }
   };
 
   return (
     <div className="container">
-      <h1>Login</h1>
+      <h1>Register</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      {message && <p style={{ color: 'green' }}>{message}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -47,10 +50,16 @@ function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Log In</button>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button type="submit">Register</button>
       </form>
     </div>
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
